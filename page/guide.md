@@ -15,13 +15,13 @@ __HANDLE_EXT Motor_type Motor_LF;
 __HANDLE_EXT uint8_t Safemode;
 ```
 
-2. 在`handle.h`中调用Motor_Init()来初始化电机，例:
+2. 在`handle.h`中调用`Motor_Init()`来初始化电机，例:
 
 ```c
 Motor_Init(&Motor_LF, CHASSIS_MOTOR_REDUCTION_RATE, DISABLE, ENABLE);
 ```
 
-下面是Motor_Init()的参数：
+下面是`Motor_Init()`的参数：
 
 | 参数名        | 描述                          |
 | ------------- | ----------------------------- |
@@ -36,11 +36,11 @@ Motor_Init(&Motor_LF, CHASSIS_MOTOR_REDUCTION_RATE, DISABLE, ENABLE);
 Can1_Device[ESC_ID(0x201)] = &Motor_LF;
 ```
 
-4. 在`task.c`中确认是否有Task_Can_Send()任务，以及Task_Sys_Init()任务中是否启动了Task_Can_Send()，没有的话可以从`user/template/tasks.c`中复制。
+4. 在`task.c`中确认是否有`Task_Can_Send()`任务，以及`Task_Sys_Init()`任务中是否启动了`Task_Can_Send()`，没有的话可以从`user/template/tasks.c`中复制。
 
-Task_Can_Send()任务负责按之前定义的CAN设备表自动发送CAN数据，并在安全模式中（SafetyMode=1）禁用所有输出。
+`Task_Can_Send()`任务负责按之前定义的CAN设备表自动发送CAN数据，并在安全模式中（`SafetyMode=1`）禁用所有输出。
 
-5. 在任务中，通过结构体成员input对电调进行输入，例：
+5. 在任务中，通过结构体成员`input`对电调进行输入，例：
 
 ```c
 Motor_LF.input = 1234;
