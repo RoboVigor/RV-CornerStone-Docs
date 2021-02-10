@@ -3,9 +3,49 @@
 ## 硬件适配
 
 ### 电机
-1. 在`handle.h`中声明`Motor_Type`类型的变量
-2. 在`handle.c`中调用`Motor_Init()`
-3. 在`interrupt.c`中的`CANX_RX0_IRQHandler()`函数中调用`Motor_Update()`
+1. 在`handle.h`中声明`Motor_Type`类型的变量，用作储存电机数据，例：
+
+```C
+__HANDLE_EXT Motor_type Motor_LF;
+```
+
+同时检查是否有用于安全模式的全局变量：
+
+```c
+__HANDLE_EXT uint8_t Safemode;
+```
+
+2. 在`handle.h`中调用Motor_Init()来初始化电机，例:
+
+```c
+Motor_Init(&Motor_LF, CHASSIS_MOTOR_REDUCTION_RATE, DISABLE, ENABLE);
+```
+
+下面是Motor_Init()的参数：
+
+| 参数名        | 描述                          |
+| ------------- | ----------------------------- |
+| Motor_Type    | 电机结构体                    |
+| reductionRate | 电机减速比(输入转速:输出转速) |
+| angleEnabled  | 是否启用连续角度计算          |
+| inputEnabled  | 是否启用电流输出              |
+
+3. 在`handle.c`中的CAN设备表中定义电机及对应的电调ID。例
+
+```c
+Can1_Device[ESC_ID(0x201)] = &Motor_LF;
+```
+
+4. 在`task.c`中确认是否有Task_Can_Send()任务，以及Task_Sys_Init()任务中是否启动了Task_Can_Send()，没有的话可以从`user/template/tasks.c`中复制。
+
+Task_Can_Send()任务负责按之前定义的CAN设备表自动发送CAN数据，并在安全模式中（SafetyMode=1）禁用所有输出。
+
+5. 在任务中，通过结构体成员input对电调进行输入，例：
+
+```c
+Motor_LF.input = 1234;
+```
+
 
 ### Snail电机
 1. 在`handle.h`中声明`PWM_Type`类型的变量
